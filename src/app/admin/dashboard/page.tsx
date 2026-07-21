@@ -31,6 +31,7 @@ import {
   Star,
   Heart,
   Zap,
+  Lock,
 } from 'lucide-react';
 
 interface Product {
@@ -124,6 +125,13 @@ export default function AdminDashboardPage() {
   });
 
   const [savingBrand, setSavingBrand] = useState(false);
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [changingPassword, setChangingPassword] = useState(false);
 
   // Fetch initial data
   const fetchData = React.useCallback(async () => {
@@ -425,6 +433,44 @@ export default function AdminDashboardPage() {
       showToast('error', msg);
     } finally {
       setSavingBrand(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      showToast('error', 'Las nuevas contraseñas no coinciden');
+      return;
+    }
+    if (passwordForm.newPassword.length < 6) {
+      showToast('error', 'La nueva contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const res = await fetch('/api/admin/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Error al cambiar la contraseña');
+      }
+
+      showToast('success', data.message || 'Contraseña actualizada correctamente');
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al cambiar la contraseña';
+      showToast('error', msg);
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -966,6 +1012,87 @@ export default function AdminDashboardPage() {
                 </button>
               </div>
             </form>
+
+            {/* Seguridad & Contraseña */}
+            <div className="bg-[#161E2E] border border-gray-800 rounded-2xl p-6 space-y-6">
+              <div className="flex items-center gap-3 border-b border-gray-800 pb-4">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <Lock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-white text-base">Seguridad & Contraseña</h3>
+                  <p className="text-xs text-gray-400">
+                    Actualiza la contraseña de acceso al panel de administración
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handleChangePassword} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                    Contraseña Actual
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={passwordForm.currentPassword}
+                    onChange={(e) =>
+                      setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
+                    }
+                    placeholder="••••••••"
+                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                      Nueva Contraseña
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      value={passwordForm.newPassword}
+                      onChange={(e) =>
+                        setPasswordForm({ ...passwordForm, newPassword: e.target.value })
+                      }
+                      placeholder="••••••••"
+                      className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                      Confirmar Nueva Contraseña
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      value={passwordForm.confirmPassword}
+                      onChange={(e) =>
+                        setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
+                      }
+                      placeholder="••••••••"
+                      className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={changingPassword}
+                    className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center gap-2 disabled:opacity-50 text-sm"
+                  >
+                    {changingPassword ? (
+                      <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <span>Actualizar Contraseña</span>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
 
