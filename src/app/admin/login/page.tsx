@@ -47,7 +47,7 @@ export default function LoginPage() {
     <main className="min-h-screen bg-[#0B0F17] flex items-center justify-center p-4 selection:bg-emerald-500 selection:text-black">
       {/* Background Glow effects */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      
+
       <div className="w-full max-w-md relative z-10">
         {/* Header Branding */}
         <div className="text-center mb-8">
@@ -85,7 +85,6 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@kallpay.com"
                   className="w-full pl-11 pr-4 py-3 bg-[#0B0F17] border border-gray-700/80 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition duration-200"
                 />
               </div>
