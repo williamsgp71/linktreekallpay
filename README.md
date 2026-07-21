@@ -62,6 +62,20 @@ Sistema Linktree autohospedado para marca de suplementos deportivos diseñado co
 
 ---
 
+## 🔑 Cambio y Reseteo de Contraseña (Seguridad CLI)
+
+Por seguridad, el cambio de contraseña está oculto en la interfaz web y se realiza exclusivamente desde la consola/terminal:
+
+### En Entorno Local (Windows / Linux):
+```bash
+npm run reset-password "tu_nueva_contraseña_aqui"
+```
+
+### En Producción (VPS Ubuntu con Docker):
+```bash
+docker compose exec linktree_app npm run reset-password "tu_nueva_contraseña_aqui"
+```
+
 ## 🐳 Despliegue en Producción (VPS Ubuntu con Docker)
 
 El proyecto incluye soporte nativo para despliegue encapsulado usando Docker y Docker Compose.
