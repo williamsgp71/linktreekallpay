@@ -1,0 +1,55 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model BrandProfile {
+  id                 String   @id @default(cuid())
+  title              String
+  bio                String
+  logoUrl            String
+  whatsappNumber     String
+  whatsappDefaultMsg String
+  bannerText         String
+  promoCode          String
+  showBanner         Boolean  @default(true)
+  updatedAt          DateTime @updatedAt
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  title     String
+  price     Float
+  imageUrl  String
+  buyUrl    String
+  badgeText String?
+  position  Int      @default(0)
+  active    Boolean  @default(true)
+  clicks    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Link {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  icon      String
+  position  Int      @default(0)
+  active    Boolean  @default(true)
+  clicks    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
