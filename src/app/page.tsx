@@ -53,7 +53,7 @@ export default async function HomePage() {
           />
 
           {/* Product Grid Component */}
-          <ProductGrid products={products} />
+          <ProductGrid products={products} whatsappNumber={profile.whatsappNumber} />
 
           {/* Links List Component */}
           <LinksList links={links} />

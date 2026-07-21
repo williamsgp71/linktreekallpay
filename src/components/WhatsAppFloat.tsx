@@ -19,8 +19,8 @@ export const WhatsAppFloat: React.FC<WhatsAppFloatProps> = ({
 }) => {
   if (!whatsappNumber) return null;
 
-  const cleanNumber = whatsappNumber.replace(/[^0-9]/g, '');
-  const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(whatsappDefaultMsg || '')}`;
+  const cleanPhone = whatsappNumber.replace(/[^0-9]/g, '');
+  const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappDefaultMsg || '')}`;
 
   return (
     <a

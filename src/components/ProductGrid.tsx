@@ -14,9 +14,13 @@ export interface ProductItem {
 
 interface ProductGridProps {
   products: ProductItem[];
+  whatsappNumber?: string;
 }
 
-export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
+export const ProductGrid: React.FC<ProductGridProps> = ({
+  products,
+  whatsappNumber = '16193622288',
+}) => {
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
   if (!products || products.length === 0) {
@@ -27,16 +31,31 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
     setImageErrors((prev) => ({ ...prev, [id]: true }));
   };
 
-  const handleBuy = (id: string, buyUrl: string) => {
+  const handleBuy = (product: ProductItem) => {
     // Record click asynchronously
     fetch('/api/click', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'product', id }),
+      body: JSON.stringify({ type: 'product', id: product.id }),
     }).catch((err) => console.error('Failed to record click', err));
 
-    if (buyUrl) {
-      window.open(buyUrl, '_blank', 'noopener,noreferrer');
+    const isWhatsappBuyUrl =
+      !product.buyUrl ||
+      product.buyUrl === '#' ||
+      product.buyUrl.includes('wa.me') ||
+      product.buyUrl.includes('whatsapp');
+
+    let targetUrl = product.buyUrl;
+    if (isWhatsappBuyUrl) {
+      const cleanPhone = (whatsappNumber || '16193622288').replace(/[^0-9]/g, '');
+      const msg = encodeURIComponent(
+        `Hola! Vengo de su Linktree y deseo información / comprar el producto: ${product.title} (${product.price}).`
+      );
+      targetUrl = `https://wa.me/${cleanPhone}?text=${msg}`;
+    }
+
+    if (targetUrl) {
+      window.open(targetUrl, '_blank');
     }
   };
 
@@ -97,7 +116,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
 
                 {/* Buy Button */}
                 <button
-                  onClick={() => handleBuy(product.id, product.buyUrl)}
+                  onClick={() => handleBuy(product)}
                   className="w-full mt-2 py-2 px-2 rounded-lg bg-emeraldAccent/15 hover:bg-emeraldAccent text-emeraldAccent hover:text-darkBg border border-emeraldAccent/40 transition-all duration-200 flex items-center justify-center gap-1.5 text-xs font-bold shadow-sm active:scale-95"
                 >
                   <ShoppingCart className="w-3.5 h-3.5" />
