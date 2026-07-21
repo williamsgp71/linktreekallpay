@@ -31,7 +31,6 @@ import {
   Star,
   Heart,
   Zap,
-  Lock,
 } from 'lucide-react';
 
 interface Product {
@@ -137,13 +136,6 @@ export default function AdminDashboardPage() {
   });
 
   const [savingBrand, setSavingBrand] = useState(false);
-
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
-  const [changingPassword, setChangingPassword] = useState(false);
 
   // Fetch initial data
   const fetchData = React.useCallback(async () => {
@@ -454,44 +446,6 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleChangePassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      showToast('error', 'Las nuevas contraseñas no coinciden');
-      return;
-    }
-    if (passwordForm.newPassword.length < 6) {
-      showToast('error', 'La nueva contraseña debe tener al menos 6 caracteres');
-      return;
-    }
-
-    setChangingPassword(true);
-    try {
-      const res = await fetch('/api/admin/change-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          currentPassword: passwordForm.currentPassword,
-          newPassword: passwordForm.newPassword,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Error al cambiar la contraseña');
-      }
-
-      showToast('success', data.message || 'Contraseña actualizada correctamente');
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error al cambiar la contraseña';
-      showToast('error', msg);
-    } finally {
-      setChangingPassword(false);
-    }
-  };
-
   // Analytics Calculations
   const totalProductClicks = products.reduce((acc, p) => acc + (p.clicks || 0), 0);
   const totalLinkClicks = links.reduce((acc, l) => acc + (l.clicks || 0), 0);
@@ -685,6 +639,7 @@ export default function AdminDashboardPage() {
                       </div>
 
                       {/* Product Image */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={product.imageUrl}
                         alt={product.titleEn}

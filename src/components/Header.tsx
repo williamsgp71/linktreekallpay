@@ -33,6 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Avatar with Emerald Glow */}
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-emeraldAccent to-neonAccent rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={logoUrl || '/placeholder-logo.png'}
           alt={title}

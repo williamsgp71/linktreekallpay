@@ -98,6 +98,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
               {/* Product Image */}
               <div className="relative w-full aspect-square bg-gray-900 overflow-hidden flex items-center justify-center p-2">
                 {!hasImageError && product.imageUrl ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={product.imageUrl}
                     alt={title}
