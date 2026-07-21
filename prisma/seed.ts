@@ -25,92 +25,106 @@ async function main() {
 
   const brandProfile = await prisma.brandProfile.create({
     data: {
-      title: 'Kallpay Fitness',
-      bio: 'Suplementos de Alta Calidad & Nutrición Deportiva Avanzada. Potencia tus entrenamientos con lo mejor.',
-      logoUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&auto=format&fit=crop&q=80',
-      whatsappNumber: '+573000000000',
-      whatsappDefaultMsg: '¡Hola! Quisiera obtener información y asesoría sobre los productos Kallpay Fitness.',
-      bannerText: '🔥 ¡ENVÍO GRATIS en compras superiores a $50! Usa el código KALLPAY10',
-      promoCode: 'KALLPAY10',
+      title: 'Kallpay',
+      bio: 'Ancestral wisdom & modern science. Suplementos, fórmulas herbales y orientación de salud personalizada 🌿',
+      logoUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=200&q=80',
+      whatsappNumber: '16193622288',
+      whatsappDefaultMsg: 'Hola! Vengo de su Linktree y quisiera información sobre sus suplementos y programas de salud.',
+      bannerText: '✨ Asesoría Inicial de Salud de 20 minutos GRATIS con nuestros especialistas',
+      promoCode: 'CONSULTA20',
       showBanner: true,
     },
   })
   console.log('Brand profile created:', brandProfile.title)
 
-  // Seed Products if none exist
-  const existingProducts = await prisma.product.count()
-  if (existingProducts === 0) {
-    await prisma.product.createMany({
-      data: [
-        {
-          title: 'Creatina Monohidratada 100% Pura 500g',
-          price: 39.99,
-          imageUrl: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=500&auto=format&fit=crop&q=60',
-          buyUrl: 'https://kallpay.com/products/creatina-500g',
-          badgeText: 'MÁS VENDIDO',
-          position: 1,
-          active: true,
-        },
-        {
-          title: 'Proteína Whey Isolate Premium 2kg',
-          price: 64.99,
-          imageUrl: 'https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?w=500&auto=format&fit=crop&q=60',
-          buyUrl: 'https://kallpay.com/products/whey-isolate-2kg',
-          badgeText: 'TOP CALIDAD',
-          position: 2,
-          active: true,
-        },
-        {
-          title: 'Pre-Workout Energy Explosion 300g',
-          price: 29.99,
-          imageUrl: 'https://images.unsplash.com/photo-1546483875-ad9014c88eba?w=500&auto=format&fit=crop&q=60',
-          buyUrl: 'https://kallpay.com/products/pre-workout-300g',
-          badgeText: 'NUEVO',
-          position: 3,
-          active: true,
-        },
-      ],
-    })
-    console.log('Products seeded.')
-  }
+  // Clear and seed Products
+  await prisma.product.deleteMany()
+  await prisma.product.createMany({
+    data: [
+      {
+        title: 'AlgaeCal Collagen',
+        price: 55.99,
+        badgeText: 'Popular',
+        imageUrl: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500&q=80',
+        buyUrl: 'https://kallpay.us/products/algaecal-collagen',
+        position: 1,
+        active: true,
+      },
+      {
+        title: 'Milk Thistle Plus',
+        price: 35.99,
+        badgeText: 'Detox & Hígado',
+        imageUrl: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?w=500&q=80',
+        buyUrl: 'https://kallpay.us/products/allergy-research-group-milk-thistle-plus',
+        position: 2,
+        active: true,
+      },
+      {
+        title: 'Mastica Digest - 120 Capsules',
+        price: 43.99,
+        badgeText: 'Salud Digestiva',
+        imageUrl: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=500&q=80',
+        buyUrl: 'https://kallpay.us/products/allergy-research-group-mastica-digest-120-capsules',
+        position: 3,
+        active: true,
+      },
+      {
+        title: 'Nattokinase Circulatory Enzymes',
+        price: 44.99,
+        badgeText: 'Circulación',
+        imageUrl: 'https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=500&q=80',
+        buyUrl: 'https://kallpay.us/products/allergy-research-group-nattokinase-circulatory-systemic-enzymes',
+        position: 4,
+        active: true,
+      },
+      {
+        title: 'Consulta Inicial Coaching de Salud (20 min)',
+        price: 0,
+        badgeText: 'Recomendado',
+        imageUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&q=80',
+        buyUrl: 'https://kallpay.us/pages/book-now-20',
+        position: 5,
+        active: true,
+      },
+    ],
+  })
+  console.log('Products seeded.')
 
-  // Seed Links if none exist
-  const existingLinks = await prisma.link.count()
-  if (existingLinks === 0) {
-    await prisma.link.createMany({
-      data: [
-        {
-          title: '🌐 Sitio Web Oficial',
-          url: 'https://kallpay.com',
-          icon: 'Globe',
-          position: 1,
-          active: true,
-        },
-        {
-          title: '💬 Asesoría Personalizada por WhatsApp',
-          url: 'https://wa.me/573000000000',
-          icon: 'MessageCircle',
-          position: 2,
-          active: true,
-        },
-        {
-          title: '📸 Síguenos en Instagram',
-          url: 'https://instagram.com/kallpay.fit',
-          icon: 'Instagram',
-          position: 3,
-          active: true,
-        },
-        {
-          title: '🎵 Comunidad TikTok',
-          url: 'https://tiktok.com/@kallpay.fit',
-          icon: 'Video',
-          position: 4,
-          active: true,
-        },
-      ],
-    })
-    console.log('Links seeded.')
-  }
+  // Clear and seed Links
+  await prisma.link.deleteMany()
+  await prisma.link.createMany({
+    data: [
+      {
+        title: '🛒 Tienda Completa de Suplementos',
+        url: 'https://kallpay.us/collections/all',
+        icon: 'shopping-bag',
+        position: 1,
+        active: true,
+      },
+      {
+        title: '📅 Agendar Consulta Gratuita (20 min)',
+        url: 'https://kallpay.us/pages/book-now-20',
+        icon: 'calendar',
+        position: 2,
+        active: true,
+      },
+      {
+        title: '🌿 Sobre Nosotros & Historia Kallpay',
+        url: 'https://kallpay.us/pages/our-story',
+        icon: 'globe',
+        position: 3,
+        active: true,
+      },
+      {
+        title: '📸 Instagram Oficial (@kallpay.us)',
+        url: 'https://www.instagram.com/kallpay.us/',
+        icon: 'instagram',
+        position: 4,
+        active: true,
+      },
+    ],
+  })
+  console.log('Links seeded.')
 
   console.log('Seeding completed successfully!')
 }

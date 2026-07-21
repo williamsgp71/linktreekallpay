@@ -8,6 +8,7 @@ import {
   MessageCircle,
   Mail,
   Phone,
+  Calendar,
   Link as LinkIcon,
   ChevronRight,
   ExternalLink,
@@ -76,6 +77,10 @@ const getIconComponent = (iconName: string) => {
     case 'store':
     case 'shop':
       return <ShoppingBag className="w-5 h-5 text-emeraldAccent" />;
+    case 'calendar':
+    case 'book':
+    case 'schedule':
+      return <Calendar className="w-5 h-5 text-purple-400" />;
     case 'message-circle':
     case 'chat':
     case 'whatsapp':
