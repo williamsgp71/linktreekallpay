@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const newPassword = process.argv[2];
-  const email = process.argv[3] || 'admin@kallpay.com';
+  const email = process.argv[3] || 'admin@kallpay.us';
 
   if (!newPassword) {
     console.log('Uso: npx tsx scripts/reset-password.ts <nueva_contraseña> [email]');

@@ -57,8 +57,8 @@ Sistema Linktree autohospedado para marca de suplementos deportivos diseñado co
    - **Panel de Admin**: `http://localhost:3000/admin/login`
 
 6. **Credenciales por Defecto (Semilla)**:
-   - **Email**: `admin@kallpay.com`
-   - **Password**: `admin123`
+   - **Email**: `admin@kallpay.us`
+   - **Password**: `K4llp4y2026$!`
 
 ---
 
