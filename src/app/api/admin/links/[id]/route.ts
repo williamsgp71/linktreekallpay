@@ -21,7 +21,12 @@ export async function PUT(
     }
 
     const dataToUpdate: Record<string, string | number | boolean> = {};
-    if (body.title !== undefined) dataToUpdate.title = body.title;
+    if (body.titleEn !== undefined) dataToUpdate.titleEn = body.titleEn;
+    if (body.titleEs !== undefined) dataToUpdate.titleEs = body.titleEs;
+    if (body.title !== undefined && body.titleEn === undefined && body.titleEs === undefined) {
+      dataToUpdate.titleEn = body.title;
+      dataToUpdate.titleEs = body.title;
+    }
     if (body.url !== undefined) dataToUpdate.url = body.url;
     if (body.icon !== undefined) dataToUpdate.icon = body.icon;
     if (body.active !== undefined) dataToUpdate.active = Boolean(body.active);

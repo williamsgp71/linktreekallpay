@@ -21,11 +21,21 @@ export async function PUT(
     }
 
     const dataToUpdate: Record<string, string | number | boolean | null> = {};
-    if (body.title !== undefined) dataToUpdate.title = body.title;
+    if (body.titleEn !== undefined) dataToUpdate.titleEn = body.titleEn;
+    if (body.titleEs !== undefined) dataToUpdate.titleEs = body.titleEs;
+    if (body.title !== undefined && body.titleEn === undefined && body.titleEs === undefined) {
+      dataToUpdate.titleEn = body.title;
+      dataToUpdate.titleEs = body.title;
+    }
     if (body.price !== undefined) dataToUpdate.price = parseFloat(body.price);
     if (body.imageUrl !== undefined) dataToUpdate.imageUrl = body.imageUrl;
     if (body.buyUrl !== undefined) dataToUpdate.buyUrl = body.buyUrl;
-    if (body.badgeText !== undefined) dataToUpdate.badgeText = body.badgeText;
+    if (body.badgeTextEn !== undefined) dataToUpdate.badgeTextEn = body.badgeTextEn;
+    if (body.badgeTextEs !== undefined) dataToUpdate.badgeTextEs = body.badgeTextEs;
+    if (body.badgeText !== undefined && body.badgeTextEn === undefined && body.badgeTextEs === undefined) {
+      dataToUpdate.badgeTextEn = body.badgeText;
+      dataToUpdate.badgeTextEs = body.badgeText;
+    }
     if (body.active !== undefined) dataToUpdate.active = Boolean(body.active);
     if (body.position !== undefined) dataToUpdate.position = Number(body.position);
     if (body.clicks !== undefined) dataToUpdate.clicks = Number(body.clicks);

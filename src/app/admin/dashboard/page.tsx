@@ -36,11 +36,13 @@ import {
 
 interface Product {
   id: string;
-  title: string;
+  titleEn: string;
+  titleEs: string;
   price: number;
   imageUrl: string;
   buyUrl: string;
-  badgeText: string | null;
+  badgeTextEn: string | null;
+  badgeTextEs: string | null;
   position: number;
   active: boolean;
   clicks: number;
@@ -48,7 +50,8 @@ interface Product {
 
 interface LinkItem {
   id: string;
-  title: string;
+  titleEn: string;
+  titleEs: string;
   url: string;
   icon: string;
   position: number;
@@ -59,11 +62,14 @@ interface LinkItem {
 interface BrandProfile {
   id?: string;
   title: string;
-  bio: string;
+  bioEn: string;
+  bioEs: string;
   logoUrl: string;
   whatsappNumber: string;
-  whatsappDefaultMsg: string;
-  bannerText: string;
+  whatsappDefaultMsgEn: string;
+  whatsappDefaultMsgEs: string;
+  bannerTextEn: string;
+  bannerTextEs: string;
   promoCode: string;
   showBanner: boolean;
 }
@@ -91,11 +97,14 @@ export default function AdminDashboardPage() {
   const [links, setLinks] = useState<LinkItem[]>([]);
   const [brand, setBrand] = useState<BrandProfile>({
     title: '',
-    bio: '',
+    bioEn: '',
+    bioEs: '',
     logoUrl: '',
     whatsappNumber: '',
-    whatsappDefaultMsg: '',
-    bannerText: '',
+    whatsappDefaultMsgEn: '',
+    whatsappDefaultMsgEs: '',
+    bannerTextEn: '',
+    bannerTextEs: '',
     promoCode: '',
     showBanner: true,
   });
@@ -107,18 +116,21 @@ export default function AdminDashboardPage() {
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [productForm, setProductForm] = useState({
-    title: '',
+    titleEn: '',
+    titleEs: '',
     price: '',
     imageUrl: '',
     buyUrl: '',
-    badgeText: '',
+    badgeTextEn: '',
+    badgeTextEs: '',
     active: true,
   });
 
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkItem | null>(null);
   const [linkForm, setLinkForm] = useState({
-    title: '',
+    titleEn: '',
+    titleEs: '',
     url: '',
     icon: 'Link',
     active: true,
@@ -192,21 +204,25 @@ export default function AdminDashboardPage() {
     if (product) {
       setEditingProduct(product);
       setProductForm({
-        title: product.title,
+        titleEn: product.titleEn || '',
+        titleEs: product.titleEs || '',
         price: product.price.toString(),
         imageUrl: product.imageUrl,
         buyUrl: product.buyUrl,
-        badgeText: product.badgeText || '',
+        badgeTextEn: product.badgeTextEn || '',
+        badgeTextEs: product.badgeTextEs || '',
         active: product.active,
       });
     } else {
       setEditingProduct(null);
       setProductForm({
-        title: '',
+        titleEn: '',
+        titleEs: '',
         price: '',
         imageUrl: '',
         buyUrl: '',
-        badgeText: '',
+        badgeTextEn: '',
+        badgeTextEs: '',
         active: true,
       });
     }
@@ -310,7 +326,8 @@ export default function AdminDashboardPage() {
     if (link) {
       setEditingLink(link);
       setLinkForm({
-        title: link.title,
+        titleEn: link.titleEn || '',
+        titleEs: link.titleEs || '',
         url: link.url,
         icon: link.icon,
         active: link.active,
@@ -318,7 +335,8 @@ export default function AdminDashboardPage() {
     } else {
       setEditingLink(null);
       setLinkForm({
-        title: '',
+        titleEn: '',
+        titleEs: '',
         url: '',
         icon: 'Link',
         active: true,
@@ -669,17 +687,20 @@ export default function AdminDashboardPage() {
                       {/* Product Image */}
                       <img
                         src={product.imageUrl}
-                        alt={product.title}
+                        alt={product.titleEn}
                         className="w-16 h-16 rounded-xl object-cover border border-gray-700 bg-gray-900"
                       />
 
                       {/* Info */}
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-white text-base">{product.title}</h3>
-                          {product.badgeText && (
+                          <h3 className="font-bold text-white text-base">
+                            {product.titleEn}{' '}
+                            <span className="text-xs text-gray-400 font-normal">({product.titleEs})</span>
+                          </h3>
+                          {(product.badgeTextEn || product.badgeTextEs) && (
                             <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                              {product.badgeText}
+                              {product.badgeTextEn || product.badgeTextEs}
                             </span>
                           )}
                         </div>
@@ -810,7 +831,10 @@ export default function AdminDashboardPage() {
 
                       {/* Info */}
                       <div>
-                        <h3 className="font-bold text-white text-base">{link.title}</h3>
+                        <h3 className="font-bold text-white text-base">
+                          {link.titleEn}{' '}
+                          <span className="text-xs text-gray-400 font-normal">({link.titleEs})</span>
+                        </h3>
                         <p className="text-xs text-gray-400 truncate max-w-md mt-0.5">
                           {link.url}
                         </p>
@@ -906,21 +930,36 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
-                  Biografía / Descripción corta
-                </label>
-                <textarea
-                  rows={3}
-                  required
-                  value={brand.bio}
-                  onChange={(e) => setBrand({ ...brand, bio: e.target.value })}
-                  placeholder="Nutrición deportiva y suplementación de alto rendimiento..."
-                  className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition resize-none"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                    Biografía (Inglés)
+                  </label>
+                  <textarea
+                    rows={3}
+                    required
+                    value={brand.bioEn}
+                    onChange={(e) => setBrand({ ...brand, bioEn: e.target.value })}
+                    placeholder="High-performance sports nutrition..."
+                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                    Biografía (Español)
+                  </label>
+                  <textarea
+                    rows={3}
+                    required
+                    value={brand.bioEs}
+                    onChange={(e) => setBrand({ ...brand, bioEs: e.target.value })}
+                    placeholder="Nutrición deportiva y suplementación de alto rendimiento..."
+                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition resize-none"
+                  />
+                </div>
               </div>
 
-              <div className="border-t border-gray-800 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="border-t border-gray-800 pt-6 space-y-6">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
                     Teléfono WhatsApp (Con código de país)
@@ -935,18 +974,33 @@ export default function AdminDashboardPage() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
-                    Mensaje Predeterminado WhatsApp
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={brand.whatsappDefaultMsg}
-                    onChange={(e) => setBrand({ ...brand, whatsappDefaultMsg: e.target.value })}
-                    placeholder="¡Hola! Me gustaría más información..."
-                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                      Mensaje de WhatsApp (Inglés)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={brand.whatsappDefaultMsgEn}
+                      onChange={(e) => setBrand({ ...brand, whatsappDefaultMsgEn: e.target.value })}
+                      placeholder="Hello! I would like more information..."
+                      className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                      Mensaje de WhatsApp (Español)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={brand.whatsappDefaultMsgEs}
+                      onChange={(e) => setBrand({ ...brand, whatsappDefaultMsgEs: e.target.value })}
+                      placeholder="¡Hola! Me gustaría más información..."
+                      className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -972,29 +1026,41 @@ export default function AdminDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
-                      Texto del Banner
+                      Texto Banner (Inglés)
                     </label>
                     <input
                       type="text"
-                      value={brand.bannerText}
-                      onChange={(e) => setBrand({ ...brand, bannerText: e.target.value })}
+                      value={brand.bannerTextEn}
+                      onChange={(e) => setBrand({ ...brand, bannerTextEn: e.target.value })}
+                      placeholder="⚡ GET 10% OFF ON YOUR FIRST PURCHASE ⚡"
+                      className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                      Texto Banner (Español)
+                    </label>
+                    <input
+                      type="text"
+                      value={brand.bannerTextEs}
+                      onChange={(e) => setBrand({ ...brand, bannerTextEs: e.target.value })}
                       placeholder="⚡ OBTÉN 10% OFF EN TU PRIMERA COMPRA ⚡"
                       className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
                     />
                   </div>
+                </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
-                      Código Promocional
-                    </label>
-                    <input
-                      type="text"
-                      value={brand.promoCode}
-                      onChange={(e) => setBrand({ ...brand, promoCode: e.target.value })}
-                      placeholder="KALLPAY10"
-                      className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                    Código Promocional
+                  </label>
+                  <input
+                    type="text"
+                    value={brand.promoCode}
+                    onChange={(e) => setBrand({ ...brand, promoCode: e.target.value })}
+                    placeholder="KALLPAY10"
+                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                  />
                 </div>
               </div>
 
@@ -1138,7 +1204,7 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
                 <div className="text-lg font-bold text-white truncate">
-                  {topProduct ? topProduct.title : 'N/A'}
+                  {topProduct ? topProduct.titleEn : 'N/A'}
                 </div>
                 <p className="text-xs text-emerald-400 mt-1 font-semibold">
                   {topProduct ? `${topProduct.clicks} clics` : 'Sin datos'}
@@ -1153,7 +1219,7 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
                 <div className="text-lg font-bold text-white truncate">
-                  {topLink ? topLink.title : 'N/A'}
+                  {topLink ? topLink.titleEn : 'N/A'}
                 </div>
                 <p className="text-xs text-emerald-400 mt-1 font-semibold">
                   {topLink ? `${topLink.clicks} clics` : 'Sin datos'}
@@ -1179,7 +1245,7 @@ export default function AdminDashboardPage() {
                       return (
                         <div key={prod.id} className="space-y-1">
                           <div className="flex justify-between text-xs font-medium">
-                            <span className="text-gray-300">{prod.title}</span>
+                            <span className="text-gray-300">{prod.titleEn}</span>
                             <span className="text-emerald-400 font-bold">{prod.clicks} clics</span>
                           </div>
                           <div className="w-full bg-gray-900 rounded-full h-2 overflow-hidden">
@@ -1211,7 +1277,7 @@ export default function AdminDashboardPage() {
                       return (
                         <div key={lnk.id} className="space-y-1">
                           <div className="flex justify-between text-xs font-medium">
-                            <span className="text-gray-300">{lnk.title}</span>
+                            <span className="text-gray-300">{lnk.titleEn}</span>
                             <span className="text-emerald-400 font-bold">{lnk.clicks} clics</span>
                           </div>
                           <div className="w-full bg-gray-900 rounded-full h-2 overflow-hidden">
@@ -1248,44 +1314,58 @@ export default function AdminDashboardPage() {
             </div>
 
             <form onSubmit={handleSaveProduct} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold uppercase text-gray-300 mb-1">
-                  Título del Producto
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={productForm.title}
-                  onChange={(e) => setProductForm({ ...productForm, title: e.target.value })}
-                  placeholder="Ej. Proteína Whey Kallpay 1kg"
-                  className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
-                />
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase text-gray-300 mb-1">
-                    Precio (COP)
+                    Título (Inglés)
                   </label>
                   <input
-                    type="number"
-                    step="0.01"
+                    type="text"
                     required
-                    value={productForm.price}
-                    onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
-                    placeholder="120000"
+                    value={productForm.titleEn}
+                    onChange={(e) => setProductForm({ ...productForm, titleEn: e.target.value })}
+                    placeholder="Ej. Kallpay Whey Protein 1kg"
                     className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold uppercase text-gray-300 mb-1">
-                    Insignia / Badge (Opcional)
+                    Título (Español)
                   </label>
                   <input
                     type="text"
-                    value={productForm.badgeText}
-                    onChange={(e) => setProductForm({ ...productForm, badgeText: e.target.value })}
+                    required
+                    value={productForm.titleEs}
+                    onChange={(e) => setProductForm({ ...productForm, titleEs: e.target.value })}
+                    placeholder="Ej. Proteína Whey Kallpay 1kg"
+                    className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-gray-300 mb-1">
+                    Badge (Inglés)
+                  </label>
+                  <input
+                    type="text"
+                    value={productForm.badgeTextEn}
+                    onChange={(e) => setProductForm({ ...productForm, badgeTextEn: e.target.value })}
+                    placeholder="Ej. Best Seller"
+                    className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-gray-300 mb-1">
+                    Badge (Español)
+                  </label>
+                  <input
+                    type="text"
+                    value={productForm.badgeTextEs}
+                    onChange={(e) => setProductForm({ ...productForm, badgeTextEs: e.target.value })}
                     placeholder="Ej. Más vendido"
                     className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
                   />
@@ -1370,18 +1450,34 @@ export default function AdminDashboardPage() {
             </div>
 
             <form onSubmit={handleSaveLink} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold uppercase text-gray-300 mb-1">
-                  Título del Enlace
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={linkForm.title}
-                  onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
-                  placeholder="Ej. Síguenos en Instagram"
-                  className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-gray-300 mb-1">
+                    Título (Inglés)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={linkForm.titleEn}
+                    onChange={(e) => setLinkForm({ ...linkForm, titleEn: e.target.value })}
+                    placeholder="Ej. Follow us on Instagram"
+                    className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-gray-300 mb-1">
+                    Título (Español)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={linkForm.titleEs}
+                    onChange={(e) => setLinkForm({ ...linkForm, titleEs: e.target.value })}
+                    placeholder="Ej. Síguenos en Instagram"
+                    className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
               </div>
 
               <div>

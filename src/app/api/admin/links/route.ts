@@ -18,11 +18,14 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, url, icon, active, position } = body;
+    const { title, titleEn, titleEs, url, icon, active, position } = body;
 
-    if (!title || !url) {
+    const finalTitleEn = titleEn || title;
+    const finalTitleEs = titleEs || title;
+
+    if (!finalTitleEn || !finalTitleEs || !url) {
       return NextResponse.json(
-        { error: 'El título y la URL son obligatorios' },
+        { error: 'El título (EN y ES) y la URL son obligatorios' },
         { status: 400 }
       );
     }
@@ -35,7 +38,8 @@ export async function POST(request: Request) {
 
     const link = await prisma.link.create({
       data: {
-        title,
+        titleEn: finalTitleEn,
+        titleEs: finalTitleEs,
         url,
         icon: icon || 'Link',
         active: active !== undefined ? Boolean(active) : true,

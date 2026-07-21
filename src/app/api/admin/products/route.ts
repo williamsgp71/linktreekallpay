@@ -18,11 +18,16 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, price, imageUrl, buyUrl, badgeText, active, position } = body;
+    const { title, titleEn, titleEs, price, imageUrl, buyUrl, badgeText, badgeTextEn, badgeTextEs, active, position } = body;
 
-    if (!title || price === undefined || !imageUrl || !buyUrl) {
+    const finalTitleEn = titleEn || title;
+    const finalTitleEs = titleEs || title;
+    const finalBadgeEn = badgeTextEn !== undefined ? badgeTextEn : (badgeText || null);
+    const finalBadgeEs = badgeTextEs !== undefined ? badgeTextEs : (badgeText || null);
+
+    if (!finalTitleEn || !finalTitleEs || price === undefined || !imageUrl || !buyUrl) {
       return NextResponse.json(
-        { error: 'Los campos título, precio, URL de imagen y URL de compra son obligatorios' },
+        { error: 'Los campos título (EN y ES), precio, URL de imagen y URL de compra son obligatorios' },
         { status: 400 }
       );
     }
@@ -35,11 +40,13 @@ export async function POST(request: Request) {
 
     const product = await prisma.product.create({
       data: {
-        title,
+        titleEn: finalTitleEn,
+        titleEs: finalTitleEs,
         price: parseFloat(price),
         imageUrl,
         buyUrl,
-        badgeText: badgeText || null,
+        badgeTextEn: finalBadgeEn,
+        badgeTextEs: finalBadgeEs,
         active: active !== undefined ? Boolean(active) : true,
         position: Number(productPosition),
       },
