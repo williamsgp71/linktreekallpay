@@ -2,19 +2,27 @@
 
 import React, { useState } from 'react';
 import { Tag, Check, Copy } from 'lucide-react';
+import { Language, translations } from '@/lib/i18n';
 
 interface PromoBannerProps {
   showBanner: boolean;
-  bannerText: string;
+  bannerTextEn?: string | null;
+  bannerTextEs?: string | null;
   promoCode: string;
+  lang: Language;
 }
 
 export const PromoBanner: React.FC<PromoBannerProps> = ({
   showBanner,
-  bannerText,
+  bannerTextEn,
+  bannerTextEs,
   promoCode,
+  lang,
 }) => {
   const [copied, setCopied] = useState(false);
+
+  const bannerText = lang === 'es' ? bannerTextEs : bannerTextEn;
+  const t = translations[lang];
 
   if (!showBanner || (!bannerText && !promoCode)) {
     return null;
@@ -49,7 +57,7 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
               )}
               {promoCode && (
                 <div className="mt-1 flex items-center justify-center sm:justify-start gap-1.5 text-xs text-gray-300">
-                  <span>Código:</span>
+                  <span>{t.code}</span>
                   <span className="font-mono font-bold text-emeraldAccent bg-emeraldAccent/10 px-2 py-0.5 rounded border border-emeraldAccent/30">
                     {promoCode}
                   </span>
@@ -70,12 +78,12 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
               {copied ? (
                 <>
                   <Check className="w-4 h-4" />
-                  <span>¡Copiado! ✓</span>
+                  <span>{t.copied}</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-4 h-4" />
-                  <span>Copiar Código</span>
+                  <span>{t.copyCode}</span>
                 </>
               )}
             </button>

@@ -1,10 +1,13 @@
 'use client';
 
 import React from 'react';
+import { Language, translations } from '@/lib/i18n';
 
 interface WhatsAppFloatProps {
   whatsappNumber: string;
-  whatsappDefaultMsg: string;
+  whatsappDefaultMsgEn?: string | null;
+  whatsappDefaultMsgEs?: string | null;
+  lang: Language;
 }
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -15,19 +18,24 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
 
 export const WhatsAppFloat: React.FC<WhatsAppFloatProps> = ({
   whatsappNumber,
-  whatsappDefaultMsg,
+  whatsappDefaultMsgEn,
+  whatsappDefaultMsgEs,
+  lang,
 }) => {
   if (!whatsappNumber) return null;
 
+  const t = translations[lang];
+  const defaultMsg = lang === 'es' ? whatsappDefaultMsgEs : whatsappDefaultMsgEn;
+
   const cleanPhone = whatsappNumber.replace(/[^0-9]/g, '');
-  const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappDefaultMsg || '')}`;
+  const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(defaultMsg || '')}`;
 
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Contactar por WhatsApp"
+      aria-label="WhatsApp"
       className="fixed bottom-5 right-5 z-50 group flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-darkBg px-4 py-3 rounded-full shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all duration-300 transform hover:scale-105"
     >
       <div className="relative flex items-center justify-center">
@@ -40,7 +48,7 @@ export const WhatsAppFloat: React.FC<WhatsAppFloatProps> = ({
       </div>
 
       <span className="hidden sm:inline-block font-extrabold text-xs tracking-wide">
-        En Línea
+        {t.online}
       </span>
     </a>
   );

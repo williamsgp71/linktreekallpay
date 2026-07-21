@@ -1,15 +1,35 @@
 import React from 'react';
 import { CheckCircle2 } from 'lucide-react';
+import { Language, translations } from '@/lib/i18n';
+import LanguageToggle from './LanguageToggle';
 
 interface HeaderProps {
   title: string;
-  bio: string;
+  bioEn: string;
+  bioEs: string;
   logoUrl: string;
+  lang: Language;
+  onLanguageChange: (lang: Language) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ title, bio, logoUrl }) => {
+export const Header: React.FC<HeaderProps> = ({
+  title,
+  bioEn,
+  bioEs,
+  logoUrl,
+  lang,
+  onLanguageChange,
+}) => {
+  const bio = lang === 'es' ? bioEs : bioEn;
+  const t = translations[lang];
+
   return (
-    <header className="flex flex-col items-center text-center space-y-4 pt-6 pb-2 px-4">
+    <header className="flex flex-col items-center text-center space-y-4 pt-4 pb-2 px-4 relative">
+      {/* Top right Language Toggle */}
+      <div className="w-full flex justify-end">
+        <LanguageToggle currentLang={lang} onLanguageChange={onLanguageChange} />
+      </div>
+
       {/* Avatar with Emerald Glow */}
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-emeraldAccent to-neonAccent rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
@@ -28,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({ title, bio, logoUrl }) => {
           </h1>
           <span
             className="inline-flex items-center justify-center p-0.5 rounded-full bg-gradient-to-r from-amber-400 via-emerald-400 to-amber-400 shadow-[0_0_10px_rgba(16,185,129,0.4)]"
-            title="Cuenta Oficial Verificada"
+            title={t.Verified}
           >
             <span className="bg-darkBg rounded-full p-0.5 flex items-center justify-center">
               <CheckCircle2 className="w-4 h-4 text-emeraldAccent fill-emeraldAccent/20" />
