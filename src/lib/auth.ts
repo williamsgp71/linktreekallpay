@@ -29,7 +29,7 @@ export async function verifyJWT(token: string): Promise<{ userId: string; email:
       return { userId: payload.userId, email: payload.email };
     }
     return null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
