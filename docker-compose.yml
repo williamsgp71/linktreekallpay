@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  linktree_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linktree_app
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=file:/app/prisma/dev.db
+      - JWT_SECRET=${JWT_SECRET:-super-secret-jwt-key-kallpay-2026}
+    volumes:
+      - sqlite_data:/app/prisma
+    restart: unless-stopped
+
+volumes:
+  sqlite_data:
