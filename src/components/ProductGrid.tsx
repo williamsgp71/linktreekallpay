@@ -1,0 +1,116 @@
+'use client';
+
+import React, { useState } from 'react';
+import { ShoppingCart, ExternalLink, Package } from 'lucide-react';
+
+export interface ProductItem {
+  id: string;
+  title: string;
+  price: number;
+  imageUrl: string;
+  buyUrl: string;
+  badgeText?: string | null;
+}
+
+interface ProductGridProps {
+  products: ProductItem[];
+}
+
+export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
+  if (!products || products.length === 0) {
+    return null;
+  }
+
+  const handleImageError = (id: string) => {
+    setImageErrors((prev) => ({ ...prev, [id]: true }));
+  };
+
+  const handleBuy = (id: string, buyUrl: string) => {
+    // Record click asynchronously
+    fetch('/api/click', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'product', id }),
+    }).catch((err) => console.error('Failed to record click', err));
+
+    if (buyUrl) {
+      window.open(buyUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  return (
+    <div className="w-full px-4 py-3 space-y-3">
+      <div className="flex items-center gap-2">
+        <Package className="w-4 h-4 text-emeraldAccent" />
+        <h2 className="text-xs font-bold uppercase tracking-wider text-gray-400">
+          Suplementos Destacados
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        {products.map((product) => {
+          const hasImageError = imageErrors[product.id];
+
+          return (
+            <div
+              key={product.id}
+              className="group relative flex flex-col justify-between rounded-xl bg-darkCard border border-gray-800 hover:border-emeraldAccent/50 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-[0_0_15px_rgba(16,185,129,0.15)]"
+            >
+              {/* Product Badge */}
+              {product.badgeText && (
+                <div className="absolute top-2 left-2 z-10">
+                  <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-darkBg font-black text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-md shadow-md">
+                    {product.badgeText}
+                  </span>
+                </div>
+              )}
+
+              {/* Product Image */}
+              <div className="relative w-full aspect-square bg-gray-900 overflow-hidden flex items-center justify-center p-2">
+                {!hasImageError && product.imageUrl ? (
+                  <img
+                    src={product.imageUrl}
+                    alt={product.title}
+                    onError={() => handleImageError(product.id)}
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-gray-500 p-4 text-center">
+                    <Package className="w-10 h-10 stroke-1 mb-1 text-emeraldAccent/40" />
+                    <span className="text-[10px]">Sin imagen</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Product Info */}
+              <div className="p-3 flex flex-col flex-grow justify-between space-y-2">
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-200 line-clamp-2 leading-snug group-hover:text-emeraldAccent transition-colors">
+                    {product.title}
+                  </h3>
+                  <p className="mt-1 text-sm font-extrabold text-white">
+                    ${product.price.toLocaleString('es-CO', { minimumFractionDigits: 0 })}
+                  </p>
+                </div>
+
+                {/* Buy Button */}
+                <button
+                  onClick={() => handleBuy(product.id, product.buyUrl)}
+                  className="w-full mt-2 py-2 px-2 rounded-lg bg-emeraldAccent/15 hover:bg-emeraldAccent text-emeraldAccent hover:text-darkBg border border-emeraldAccent/40 transition-all duration-200 flex items-center justify-center gap-1.5 text-xs font-bold shadow-sm active:scale-95"
+                >
+                  <ShoppingCart className="w-3.5 h-3.5" />
+                  <span>Comprar</span>
+                  <ExternalLink className="w-3 h-3 opacity-70" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default ProductGrid;
