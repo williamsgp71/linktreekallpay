@@ -9,15 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        darkBg: "#0B0F17",
-        darkCard: "#161E2E",
-        emeraldAccent: "#10B981",
-        neonAccent: "#34D399",
+        darkBg: "var(--color-bg)",
+        darkCard: "var(--color-card)",
+        emeraldAccent: "var(--color-accent)",
+        neonAccent: "var(--color-accent)",
         brand: {
-          bg: "#0B0F17",
-          card: "#161E2E",
-          emerald: "#10B981",
-          neon: "#34D399",
+          accent: "var(--color-accent)",
+          text: "var(--color-text)",
         },
       },
     },
