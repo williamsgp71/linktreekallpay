@@ -1,3 +1,5 @@
+import { hexToRgbChannels } from '@/lib/theme';
+
 interface ThemeStyleProps {
   colorBackground: string;
   colorCard: string;
@@ -11,7 +13,7 @@ export function ThemeStyle({
   colorAccent,
   colorText,
 }: ThemeStyleProps) {
-  const css = `:root{--color-bg:${colorBackground};--color-card:${colorCard};--color-accent:${colorAccent};--color-text:${colorText};}`;
+  const css = `:root{--color-bg:${hexToRgbChannels(colorBackground)};--color-card:${hexToRgbChannels(colorCard)};--color-accent:${hexToRgbChannels(colorAccent)};--color-text:${hexToRgbChannels(colorText)};}`;
   return <style>{css}</style>;
 }
 

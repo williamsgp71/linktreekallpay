@@ -84,7 +84,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
           return (
             <div
               key={product.id}
-              className="group relative flex flex-col justify-between rounded-xl bg-darkCard border border-gray-800 hover:border-emeraldAccent/50 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-[0_0_15px_rgba(16,185,129,0.15)]"
+              className="group relative flex flex-col justify-between rounded-xl bg-darkCard border border-gray-800 hover:border-emeraldAccent/50 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-emeraldAccent/15"
             >
               {/* Product Badge */}
               {badgeText && (

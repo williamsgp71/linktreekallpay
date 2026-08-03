@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-
-const HEX_COLOR_REGEX = /^#([0-9A-Fa-f]{3}){1,2}$/;
-
-function isValidHexColor(value: unknown): value is string {
-  return typeof value === 'string' && HEX_COLOR_REGEX.test(value);
-}
+import { isValidHexColor } from '@/lib/theme';
 
 export async function GET() {
   try {
@@ -63,7 +58,7 @@ export async function PUT(request: Request) {
     } = body;
 
     const colorFields = { colorBackground, colorCard, colorAccent, colorText };
-    for (const [, value] of Object.entries(colorFields)) {
+    for (const value of Object.values(colorFields)) {
       if (value !== undefined && !isValidHexColor(value)) {
         return NextResponse.json(
           { error: 'Color inválido' },

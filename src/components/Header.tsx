@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
         <img
           src={logoUrl || '/placeholder-logo.png'}
           alt={title}
-          className="relative w-24 h-24 rounded-full object-cover border-2 border-emeraldAccent shadow-[0_0_20px_rgba(16,185,129,0.4)] bg-darkCard"
+          className="relative w-24 h-24 rounded-full object-cover border-2 border-emeraldAccent shadow-lg shadow-emeraldAccent/40 bg-darkCard"
         />
       </div>
 
@@ -48,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({
             {title}
           </h1>
           <span
-            className="inline-flex items-center justify-center p-0.5 rounded-full bg-gradient-to-r from-amber-400 via-emerald-400 to-amber-400 shadow-[0_0_10px_rgba(16,185,129,0.4)]"
+            className="inline-flex items-center justify-center p-0.5 rounded-full bg-gradient-to-r from-amber-400 via-emeraldAccent to-amber-400 shadow-md shadow-emeraldAccent/40"
             title={t.Verified}
           >
             <span className="bg-darkBg rounded-full p-0.5 flex items-center justify-center">

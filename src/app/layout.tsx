@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { prisma } from "@/lib/prisma";
 import ThemeStyle from "@/components/ThemeStyle";
+import { DEFAULT_THEME } from "@/lib/theme";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,13 +15,6 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
-
-const DEFAULT_THEME = {
-  colorBackground: '#0B0F17',
-  colorCard: '#161E2E',
-  colorAccent: '#10B981',
-  colorText: '#F3F4F6',
-};
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +28,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const profile = await prisma.brandProfile.findFirst();
+  let profile = null;
+  try {
+    profile = await prisma.brandProfile.findFirst();
+  } catch {
+    // fall through to DEFAULT_THEME below
+  }
 
   return (
     <html lang="en">

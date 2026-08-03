@@ -32,6 +32,7 @@ import {
   Heart,
   Zap,
 } from 'lucide-react';
+import { DEFAULT_THEME, HEX_COLOR_REGEX, hexToRgbChannels } from '@/lib/theme';
 
 interface Product {
   id: string;
@@ -442,7 +443,10 @@ export default function AdminDashboardPage() {
         body: JSON.stringify(brand),
       });
 
-      if (!res.ok) throw new Error('Error al actualizar la configuración');
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Error al actualizar la configuración');
+      }
       const updated = await res.json();
       setBrand(updated);
       showToast('success', 'Configuración de marca guardada');
@@ -455,8 +459,6 @@ export default function AdminDashboardPage() {
   };
 
   // --- COLOR HANDLERS ---
-  const HEX_COLOR_REGEX = /^#([0-9A-Fa-f]{3}){1,2}$/;
-
   const CSS_VAR_BY_FIELD = {
     colorBackground: '--color-bg',
     colorCard: '--color-card',
@@ -466,24 +468,19 @@ export default function AdminDashboardPage() {
 
   type ColorField = keyof typeof CSS_VAR_BY_FIELD;
 
-  const DEFAULT_COLORS: Record<ColorField, string> = {
-    colorBackground: '#0B0F17',
-    colorCard: '#161E2E',
-    colorAccent: '#10B981',
-    colorText: '#F3F4F6',
-  };
+  const DEFAULT_COLORS: Record<ColorField, string> = DEFAULT_THEME;
 
   const handleColorChange = (field: ColorField, value: string) => {
     setBrand((prev) => ({ ...prev, [field]: value }));
     if (HEX_COLOR_REGEX.test(value)) {
-      document.documentElement.style.setProperty(CSS_VAR_BY_FIELD[field], value);
+      document.documentElement.style.setProperty(CSS_VAR_BY_FIELD[field], hexToRgbChannels(value));
     }
   };
 
   const handleResetColors = () => {
     setBrand((prev) => ({ ...prev, ...DEFAULT_COLORS }));
     (Object.keys(DEFAULT_COLORS) as ColorField[]).forEach((field) => {
-      document.documentElement.style.setProperty(CSS_VAR_BY_FIELD[field], DEFAULT_COLORS[field]);
+      document.documentElement.style.setProperty(CSS_VAR_BY_FIELD[field], hexToRgbChannels(DEFAULT_COLORS[field]));
     });
   };
 
