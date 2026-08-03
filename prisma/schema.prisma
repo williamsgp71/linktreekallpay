@@ -29,6 +29,10 @@ model BrandProfile {
   bannerTextEs         String
   promoCode            String
   showBanner           Boolean  @default(true)
+  colorBackground      String   @default("#0B0F17")
+  colorCard            String   @default("#161E2E")
+  colorAccent          String   @default("#10B981")
+  colorText            String   @default("#F3F4F6")
   updatedAt            DateTime @updatedAt
 }
 
