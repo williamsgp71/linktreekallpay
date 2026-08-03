@@ -63,7 +63,7 @@ export async function PUT(request: Request) {
     } = body;
 
     const colorFields = { colorBackground, colorCard, colorAccent, colorText };
-    for (const [key, value] of Object.entries(colorFields)) {
+    for (const [, value] of Object.entries(colorFields)) {
       if (value !== undefined && !isValidHexColor(value)) {
         return NextResponse.json(
           { error: 'Color inválido' },
