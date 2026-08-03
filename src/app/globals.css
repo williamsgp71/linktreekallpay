@@ -8,8 +8,8 @@
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: rgb(var(--color-text, 243 244 246) / 1);
+  background: rgb(var(--color-bg, 11 15 23) / 1);
   min-height: 100vh;
 }
 

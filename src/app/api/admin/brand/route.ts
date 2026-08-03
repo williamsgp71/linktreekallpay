@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { isValidHexColor } from '@/lib/theme';
 
 export async function GET() {
   try {
@@ -50,7 +51,21 @@ export async function PUT(request: Request) {
       bannerTextEs,
       promoCode,
       showBanner,
+      colorBackground,
+      colorCard,
+      colorAccent,
+      colorText,
     } = body;
+
+    const colorFields = { colorBackground, colorCard, colorAccent, colorText };
+    for (const value of Object.values(colorFields)) {
+      if (value !== undefined && !isValidHexColor(value)) {
+        return NextResponse.json(
+          { error: 'Color inválido' },
+          { status: 400 }
+        );
+      }
+    }
 
     const existingProfile = await prisma.brandProfile.findFirst();
 
@@ -70,6 +85,10 @@ export async function PUT(request: Request) {
           bannerTextEs: bannerTextEs !== undefined ? bannerTextEs : (bannerText !== undefined ? bannerText : existingProfile.bannerTextEs),
           promoCode: promoCode !== undefined ? promoCode : existingProfile.promoCode,
           showBanner: showBanner !== undefined ? Boolean(showBanner) : existingProfile.showBanner,
+          colorBackground: colorBackground !== undefined ? colorBackground : existingProfile.colorBackground,
+          colorCard: colorCard !== undefined ? colorCard : existingProfile.colorCard,
+          colorAccent: colorAccent !== undefined ? colorAccent : existingProfile.colorAccent,
+          colorText: colorText !== undefined ? colorText : existingProfile.colorText,
         },
       });
     } else {
@@ -86,6 +105,10 @@ export async function PUT(request: Request) {
           bannerTextEs: bannerTextEs || bannerText || '⚡ OBTÉN 10% OFF ⚡',
           promoCode: promoCode || 'KALLPAY10',
           showBanner: showBanner !== undefined ? Boolean(showBanner) : true,
+          colorBackground: colorBackground || '#0B0F17',
+          colorCard: colorCard || '#161E2E',
+          colorAccent: colorAccent || '#10B981',
+          colorText: colorText || '#F3F4F6',
         },
       });
     }

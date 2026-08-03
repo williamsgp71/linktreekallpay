@@ -71,8 +71,8 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
               onClick={handleCopy}
               className={`w-full sm:w-auto px-4 py-2 rounded-lg font-bold text-xs transition-all duration-200 flex items-center justify-center gap-1.5 shadow-md ${
                 copied
-                  ? 'bg-emerald-500 text-darkBg border border-emerald-400'
-                  : 'bg-emeraldAccent text-darkBg hover:bg-neonAccent hover:shadow-[0_0_12px_rgba(52,211,153,0.4)] active:scale-95'
+                  ? 'bg-emeraldAccent text-darkBg border border-emeraldAccent'
+                  : 'bg-emeraldAccent text-darkBg hover:bg-neonAccent hover:shadow-emeraldAccent/40 active:scale-95'
               }`}
             >
               {copied ? (

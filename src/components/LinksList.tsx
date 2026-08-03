@@ -141,7 +141,7 @@ export const LinksList: React.FC<LinksListProps> = ({ links, lang }) => {
             <button
               key={link.id}
               onClick={() => handleLinkClick(link.id, link.url)}
-              className="w-full group p-4 rounded-xl bg-darkCard border border-emeraldAccent/30 hover:border-neonAccent text-white font-semibold flex items-center justify-between transition-all duration-300 hover:shadow-[0_0_20px_rgba(52,211,153,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99]"
+              className="w-full group p-4 rounded-xl bg-darkCard border border-emeraldAccent/30 hover:border-neonAccent text-white font-semibold flex items-center justify-between transition-all duration-300 hover:shadow-lg hover:shadow-emeraldAccent/30 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99]"
             >
               <div className="flex items-center gap-3.5">
                 <div className="p-2 rounded-lg bg-gray-900/80 border border-gray-700/50 group-hover:border-emeraldAccent/50 transition-colors">

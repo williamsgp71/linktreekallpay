@@ -32,6 +32,7 @@ import {
   Heart,
   Zap,
 } from 'lucide-react';
+import { DEFAULT_THEME, HEX_COLOR_REGEX, hexToRgbChannels } from '@/lib/theme';
 
 interface Product {
   id: string;
@@ -71,6 +72,10 @@ interface BrandProfile {
   bannerTextEs: string;
   promoCode: string;
   showBanner: boolean;
+  colorBackground: string;
+  colorCard: string;
+  colorAccent: string;
+  colorText: string;
 }
 
 const ICON_OPTIONS = [
@@ -106,6 +111,10 @@ export default function AdminDashboardPage() {
     bannerTextEs: '',
     promoCode: '',
     showBanner: true,
+    colorBackground: '#0B0F17',
+    colorCard: '#161E2E',
+    colorAccent: '#10B981',
+    colorText: '#F3F4F6',
   });
 
   const [loading, setLoading] = useState(true);
@@ -434,7 +443,10 @@ export default function AdminDashboardPage() {
         body: JSON.stringify(brand),
       });
 
-      if (!res.ok) throw new Error('Error al actualizar la configuración');
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Error al actualizar la configuración');
+      }
       const updated = await res.json();
       setBrand(updated);
       showToast('success', 'Configuración de marca guardada');
@@ -446,6 +458,32 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // --- COLOR HANDLERS ---
+  const CSS_VAR_BY_FIELD = {
+    colorBackground: '--color-bg',
+    colorCard: '--color-card',
+    colorAccent: '--color-accent',
+    colorText: '--color-text',
+  } as const;
+
+  type ColorField = keyof typeof CSS_VAR_BY_FIELD;
+
+  const DEFAULT_COLORS: Record<ColorField, string> = DEFAULT_THEME;
+
+  const handleColorChange = (field: ColorField, value: string) => {
+    setBrand((prev) => ({ ...prev, [field]: value }));
+    if (HEX_COLOR_REGEX.test(value)) {
+      document.documentElement.style.setProperty(CSS_VAR_BY_FIELD[field], hexToRgbChannels(value));
+    }
+  };
+
+  const handleResetColors = () => {
+    setBrand((prev) => ({ ...prev, ...DEFAULT_COLORS }));
+    (Object.keys(DEFAULT_COLORS) as ColorField[]).forEach((field) => {
+      document.documentElement.style.setProperty(CSS_VAR_BY_FIELD[field], hexToRgbChannels(DEFAULT_COLORS[field]));
+    });
+  };
+
   // Analytics Calculations
   const totalProductClicks = products.reduce((acc, p) => acc + (p.clicks || 0), 0);
   const totalLinkClicks = links.reduce((acc, l) => acc + (l.clicks || 0), 0);
@@ -453,7 +491,7 @@ export default function AdminDashboardPage() {
   const topLink = links.length > 0 ? [...links].sort((a, b) => b.clicks - a.clicks)[0] : null;
 
   return (
-    <div className="min-h-screen bg-[#0B0F17] text-gray-100 font-sans selection:bg-emerald-500 selection:text-black">
+    <div className="min-h-screen bg-darkBg text-brand-text font-sans selection:bg-brand-accent selection:text-darkBg">
       {/* Toast Notification */}
       {notification && (
         <div
@@ -473,15 +511,15 @@ export default function AdminDashboardPage() {
       )}
 
       {/* Top Header Navigation */}
-      <header className="sticky top-0 z-30 bg-[#161E2E]/90 backdrop-blur-md border-b border-gray-800">
+      <header className="sticky top-0 z-30 bg-darkCard/90 backdrop-blur-md border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg">
+            <div className="w-10 h-10 rounded-xl bg-brand-accent/10 border border-brand-accent/20 text-brand-accent flex items-center justify-center font-bold text-lg">
               K
             </div>
             <div>
-              <h1 className="font-bold text-white text-lg tracking-tight">
-                Kallpay <span className="text-emerald-400">Admin</span>
+              <h1 className="font-bold text-brand-text text-lg tracking-tight">
+                Kallpay <span className="text-brand-accent">Admin</span>
               </h1>
               <p className="text-xs text-gray-400 hidden sm:block">Panel de Control</p>
             </div>
@@ -524,7 +562,7 @@ export default function AdminDashboardPage() {
             onClick={() => setActiveTab('products')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition whitespace-nowrap ${
               activeTab === 'products'
-                ? 'bg-emerald-500 text-black font-bold shadow-lg shadow-emerald-500/20'
+                ? 'bg-brand-accent text-darkBg font-bold shadow-lg shadow-brand-accent/20'
                 : 'bg-gray-900/50 text-gray-400 hover:text-white hover:bg-gray-800'
             }`}
           >
@@ -539,7 +577,7 @@ export default function AdminDashboardPage() {
             onClick={() => setActiveTab('links')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition whitespace-nowrap ${
               activeTab === 'links'
-                ? 'bg-emerald-500 text-black font-bold shadow-lg shadow-emerald-500/20'
+                ? 'bg-brand-accent text-darkBg font-bold shadow-lg shadow-brand-accent/20'
                 : 'bg-gray-900/50 text-gray-400 hover:text-white hover:bg-gray-800'
             }`}
           >
@@ -554,7 +592,7 @@ export default function AdminDashboardPage() {
             onClick={() => setActiveTab('brand')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition whitespace-nowrap ${
               activeTab === 'brand'
-                ? 'bg-emerald-500 text-black font-bold shadow-lg shadow-emerald-500/20'
+                ? 'bg-brand-accent text-darkBg font-bold shadow-lg shadow-brand-accent/20'
                 : 'bg-gray-900/50 text-gray-400 hover:text-white hover:bg-gray-800'
             }`}
           >
@@ -566,7 +604,7 @@ export default function AdminDashboardPage() {
             onClick={() => setActiveTab('analytics')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition whitespace-nowrap ${
               activeTab === 'analytics'
-                ? 'bg-emerald-500 text-black font-bold shadow-lg shadow-emerald-500/20'
+                ? 'bg-brand-accent text-darkBg font-bold shadow-lg shadow-brand-accent/20'
                 : 'bg-gray-900/50 text-gray-400 hover:text-white hover:bg-gray-800'
             }`}
           >
@@ -587,7 +625,7 @@ export default function AdminDashboardPage() {
               </div>
               <button
                 onClick={() => openProductModal()}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm shadow-lg shadow-emerald-500/20 transition"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand-accent hover:bg-brand-accent/90 text-darkBg font-bold text-sm shadow-lg shadow-brand-accent/20 transition"
               >
                 <Plus className="w-4 h-4" />
                 <span>Nuevo Producto</span>
@@ -597,7 +635,7 @@ export default function AdminDashboardPage() {
             {loading ? (
               <div className="text-center py-16 text-gray-400">Cargando productos...</div>
             ) : products.length === 0 ? (
-              <div className="bg-[#161E2E] border border-gray-800 rounded-2xl p-12 text-center">
+              <div className="bg-darkCard border border-gray-800 rounded-2xl p-12 text-center">
                 <Package className="w-12 h-12 text-gray-600 mx-auto mb-3" />
                 <h3 className="text-lg font-semibold text-white">No hay productos en el catálogo</h3>
                 <p className="text-sm text-gray-400 mb-4">
@@ -605,7 +643,7 @@ export default function AdminDashboardPage() {
                 </p>
                 <button
                   onClick={() => openProductModal()}
-                  className="px-4 py-2 rounded-xl bg-emerald-500 text-black font-bold text-sm"
+                  className="px-4 py-2 rounded-xl bg-brand-accent text-darkBg font-bold text-sm"
                 >
                   Crear Producto
                 </button>
@@ -615,7 +653,7 @@ export default function AdminDashboardPage() {
                 {products.map((product, idx) => (
                   <div
                     key={product.id}
-                    className={`bg-[#161E2E] border rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 transition ${
+                    className={`bg-darkCard border rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 transition ${
                       product.active ? 'border-gray-800' : 'border-gray-800/50 opacity-60'
                     }`}
                   >
@@ -654,12 +692,12 @@ export default function AdminDashboardPage() {
                             <span className="text-xs text-gray-400 font-normal">({product.titleEs})</span>
                           </h3>
                           {(product.badgeTextEn || product.badgeTextEs) && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold bg-brand-accent/20 text-brand-accent border border-brand-accent/30">
                               {product.badgeTextEn || product.badgeTextEs}
                             </span>
                           )}
                         </div>
-                        <p className="text-emerald-400 font-extrabold text-sm mt-0.5">
+                        <p className="text-brand-accent font-extrabold text-sm mt-0.5">
                           ${product.price.toLocaleString()} COP
                         </p>
                         <p className="text-xs text-gray-400 truncate max-w-xs mt-0.5">
@@ -672,7 +710,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-gray-800">
                       {/* Click Badge */}
                       <div className="px-3 py-1 rounded-lg bg-gray-900 border border-gray-800 flex items-center gap-1.5 text-xs text-gray-300">
-                        <MousePointerClick className="w-3.5 h-3.5 text-emerald-400" />
+                        <MousePointerClick className="w-3.5 h-3.5 text-brand-accent" />
                         <span className="font-bold">{product.clicks || 0}</span>
                         <span className="text-gray-500">clics</span>
                       </div>
@@ -682,7 +720,7 @@ export default function AdminDashboardPage() {
                         onClick={() => handleToggleProductActive(product)}
                         className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition ${
                           product.active
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                            ? 'bg-brand-accent/10 border-brand-accent/30 text-brand-accent'
                             : 'bg-gray-800 border-gray-700 text-gray-400'
                         }`}
                         title={product.active ? 'Desactivar' : 'Activar'}
@@ -728,7 +766,7 @@ export default function AdminDashboardPage() {
               </div>
               <button
                 onClick={() => openLinkModal()}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm shadow-lg shadow-emerald-500/20 transition"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand-accent hover:bg-brand-accent/90 text-darkBg font-bold text-sm shadow-lg shadow-brand-accent/20 transition"
               >
                 <Plus className="w-4 h-4" />
                 <span>Nuevo Enlace</span>
@@ -738,7 +776,7 @@ export default function AdminDashboardPage() {
             {loading ? (
               <div className="text-center py-16 text-gray-400">Cargando enlaces...</div>
             ) : links.length === 0 ? (
-              <div className="bg-[#161E2E] border border-gray-800 rounded-2xl p-12 text-center">
+              <div className="bg-darkCard border border-gray-800 rounded-2xl p-12 text-center">
                 <LinkIcon className="w-12 h-12 text-gray-600 mx-auto mb-3" />
                 <h3 className="text-lg font-semibold text-white">No hay enlaces creados</h3>
                 <p className="text-sm text-gray-400 mb-4">
@@ -746,7 +784,7 @@ export default function AdminDashboardPage() {
                 </p>
                 <button
                   onClick={() => openLinkModal()}
-                  className="px-4 py-2 rounded-xl bg-emerald-500 text-black font-bold text-sm"
+                  className="px-4 py-2 rounded-xl bg-brand-accent text-darkBg font-bold text-sm"
                 >
                   Crear Enlace
                 </button>
@@ -756,7 +794,7 @@ export default function AdminDashboardPage() {
                 {links.map((link, idx) => (
                   <div
                     key={link.id}
-                    className={`bg-[#161E2E] border rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 transition ${
+                    className={`bg-darkCard border rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 transition ${
                       link.active ? 'border-gray-800' : 'border-gray-800/50 opacity-60'
                     }`}
                   >
@@ -780,7 +818,7 @@ export default function AdminDashboardPage() {
                       </div>
 
                       {/* Icon preview */}
-                      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-brand-accent/10 border border-brand-accent/20 text-brand-accent flex items-center justify-center shrink-0">
                         {renderIcon(link.icon)}
                       </div>
 
@@ -800,7 +838,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-gray-800">
                       {/* Click Badge */}
                       <div className="px-3 py-1 rounded-lg bg-gray-900 border border-gray-800 flex items-center gap-1.5 text-xs text-gray-300">
-                        <MousePointerClick className="w-3.5 h-3.5 text-emerald-400" />
+                        <MousePointerClick className="w-3.5 h-3.5 text-brand-accent" />
                         <span className="font-bold">{link.clicks || 0}</span>
                         <span className="text-gray-500">clics</span>
                       </div>
@@ -810,7 +848,7 @@ export default function AdminDashboardPage() {
                         onClick={() => handleToggleLinkActive(link)}
                         className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition ${
                           link.active
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                            ? 'bg-brand-accent/10 border-brand-accent/30 text-brand-accent'
                             : 'bg-gray-800 border-gray-700 text-gray-400'
                         }`}
                         title={link.active ? 'Desactivar' : 'Activar'}
@@ -854,7 +892,7 @@ export default function AdminDashboardPage() {
               </p>
             </div>
 
-            <form onSubmit={handleSaveBrand} className="bg-[#161E2E] border border-gray-800 rounded-2xl p-6 space-y-6">
+            <form onSubmit={handleSaveBrand} className="bg-darkCard border border-gray-800 rounded-2xl p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
@@ -866,7 +904,7 @@ export default function AdminDashboardPage() {
                     value={brand.title}
                     onChange={(e) => setBrand({ ...brand, title: e.target.value })}
                     placeholder="Ej. Kallpay Supplements"
-                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                    className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition"
                   />
                 </div>
 
@@ -880,7 +918,7 @@ export default function AdminDashboardPage() {
                     value={brand.logoUrl}
                     onChange={(e) => setBrand({ ...brand, logoUrl: e.target.value })}
                     placeholder="https://..."
-                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                    className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition"
                   />
                 </div>
               </div>
@@ -896,7 +934,7 @@ export default function AdminDashboardPage() {
                     value={brand.bioEn}
                     onChange={(e) => setBrand({ ...brand, bioEn: e.target.value })}
                     placeholder="High-performance sports nutrition..."
-                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition resize-none"
+                    className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition resize-none"
                   />
                 </div>
                 <div>
@@ -909,7 +947,7 @@ export default function AdminDashboardPage() {
                     value={brand.bioEs}
                     onChange={(e) => setBrand({ ...brand, bioEs: e.target.value })}
                     placeholder="Nutrición deportiva y suplementación de alto rendimiento..."
-                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition resize-none"
+                    className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition resize-none"
                   />
                 </div>
               </div>
@@ -925,7 +963,7 @@ export default function AdminDashboardPage() {
                     value={brand.whatsappNumber}
                     onChange={(e) => setBrand({ ...brand, whatsappNumber: e.target.value })}
                     placeholder="+573000000000"
-                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                    className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition"
                   />
                 </div>
 
@@ -940,7 +978,7 @@ export default function AdminDashboardPage() {
                       value={brand.whatsappDefaultMsgEn}
                       onChange={(e) => setBrand({ ...brand, whatsappDefaultMsgEn: e.target.value })}
                       placeholder="Hello! I would like more information..."
-                      className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                      className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition"
                     />
                   </div>
                   <div>
@@ -953,7 +991,7 @@ export default function AdminDashboardPage() {
                       value={brand.whatsappDefaultMsgEs}
                       onChange={(e) => setBrand({ ...brand, whatsappDefaultMsgEs: e.target.value })}
                       placeholder="¡Hola! Me gustaría más información..."
-                      className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                      className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition"
                     />
                   </div>
                 </div>
@@ -974,7 +1012,7 @@ export default function AdminDashboardPage() {
                       onChange={(e) => setBrand({ ...brand, showBanner: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500" />
+                    <div className="w-11 h-6 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-accent" />
                   </label>
                 </div>
 
@@ -988,7 +1026,7 @@ export default function AdminDashboardPage() {
                       value={brand.bannerTextEn}
                       onChange={(e) => setBrand({ ...brand, bannerTextEn: e.target.value })}
                       placeholder="⚡ GET 10% OFF ON YOUR FIRST PURCHASE ⚡"
-                      className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                      className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition"
                     />
                   </div>
                   <div>
@@ -1000,7 +1038,7 @@ export default function AdminDashboardPage() {
                       value={brand.bannerTextEs}
                       onChange={(e) => setBrand({ ...brand, bannerTextEs: e.target.value })}
                       placeholder="⚡ OBTÉN 10% OFF EN TU PRIMERA COMPRA ⚡"
-                      className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                      className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition"
                     />
                   </div>
                 </div>
@@ -1014,8 +1052,58 @@ export default function AdminDashboardPage() {
                     value={brand.promoCode}
                     onChange={(e) => setBrand({ ...brand, promoCode: e.target.value })}
                     placeholder="KALLPAY10"
-                    className="w-full px-4 py-3 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition"
+                    className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition"
                   />
+                </div>
+              </div>
+
+              <div className="border-t border-gray-800 pt-6 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-white text-sm">Colores de la Página</h4>
+                    <p className="text-xs text-gray-400">
+                      Personaliza el fondo, las tarjetas, el acento y el texto principal. Se previsualiza al instante.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleResetColors}
+                    className="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-medium text-gray-200 border border-gray-700 transition"
+                  >
+                    Restaurar valores por defecto
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {(
+                    [
+                      { field: 'colorBackground' as ColorField, label: 'Fondo General' },
+                      { field: 'colorCard' as ColorField, label: 'Tarjetas / Banner' },
+                      { field: 'colorAccent' as ColorField, label: 'Acento (Botones, Precios)' },
+                      { field: 'colorText' as ColorField, label: 'Texto Principal' },
+                    ]
+                  ).map(({ field, label }) => (
+                    <div key={field}>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                        {label}
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="color"
+                          value={brand[field]}
+                          onChange={(e) => handleColorChange(field, e.target.value)}
+                          className="w-12 h-11 rounded-lg border border-gray-700 bg-darkBg cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={brand[field]}
+                          onChange={(e) => handleColorChange(field, e.target.value)}
+                          placeholder="#000000"
+                          className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-brand-accent transition"
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -1023,7 +1111,7 @@ export default function AdminDashboardPage() {
                 <button
                   type="submit"
                   disabled={savingBrand}
-                  className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center gap-2 disabled:opacity-50"
+                  className="px-6 py-3 bg-brand-accent hover:bg-brand-accent/90 text-darkBg font-bold rounded-xl shadow-lg shadow-brand-accent/20 transition flex items-center gap-2 disabled:opacity-50"
                 >
                   {savingBrand ? (
                     <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
@@ -1054,10 +1142,10 @@ export default function AdminDashboardPage() {
 
             {/* Metrics Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-[#161E2E] border border-gray-800 rounded-2xl p-6">
+              <div className="bg-darkCard border border-gray-800 rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-semibold uppercase text-gray-400">Clics Productos</span>
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-brand-accent/10 text-brand-accent flex items-center justify-center">
                     <Package className="w-5 h-5" />
                   </div>
                 </div>
@@ -1065,10 +1153,10 @@ export default function AdminDashboardPage() {
                 <p className="text-xs text-gray-500 mt-1">Interacciones en catálogo</p>
               </div>
 
-              <div className="bg-[#161E2E] border border-gray-800 rounded-2xl p-6">
+              <div className="bg-darkCard border border-gray-800 rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-semibold uppercase text-gray-400">Clics Enlaces</span>
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-brand-accent/10 text-brand-accent flex items-center justify-center">
                     <LinkIcon className="w-5 h-5" />
                   </div>
                 </div>
@@ -1076,7 +1164,7 @@ export default function AdminDashboardPage() {
                 <p className="text-xs text-gray-500 mt-1">Visitas a redes y accesos</p>
               </div>
 
-              <div className="bg-[#161E2E] border border-gray-800 rounded-2xl p-6">
+              <div className="bg-darkCard border border-gray-800 rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-semibold uppercase text-gray-400">Top Producto</span>
                   <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
@@ -1086,12 +1174,12 @@ export default function AdminDashboardPage() {
                 <div className="text-lg font-bold text-white truncate">
                   {topProduct ? topProduct.titleEn : 'N/A'}
                 </div>
-                <p className="text-xs text-emerald-400 mt-1 font-semibold">
+                <p className="text-xs text-brand-accent mt-1 font-semibold">
                   {topProduct ? `${topProduct.clicks} clics` : 'Sin datos'}
                 </p>
               </div>
 
-              <div className="bg-[#161E2E] border border-gray-800 rounded-2xl p-6">
+              <div className="bg-darkCard border border-gray-800 rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-semibold uppercase text-gray-400">Top Enlace</span>
                   <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
@@ -1101,7 +1189,7 @@ export default function AdminDashboardPage() {
                 <div className="text-lg font-bold text-white truncate">
                   {topLink ? topLink.titleEn : 'N/A'}
                 </div>
-                <p className="text-xs text-emerald-400 mt-1 font-semibold">
+                <p className="text-xs text-brand-accent mt-1 font-semibold">
                   {topLink ? `${topLink.clicks} clics` : 'Sin datos'}
                 </p>
               </div>
@@ -1110,9 +1198,9 @@ export default function AdminDashboardPage() {
             {/* Click Breakdown */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Products Breakdown */}
-              <div className="bg-[#161E2E] border border-gray-800 rounded-2xl p-6">
+              <div className="bg-darkCard border border-gray-800 rounded-2xl p-6">
                 <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                  <Package className="w-5 h-5 text-emerald-400" />
+                  <Package className="w-5 h-5 text-brand-accent" />
                   <span>Desglose por Producto</span>
                 </h3>
 
@@ -1126,11 +1214,11 @@ export default function AdminDashboardPage() {
                         <div key={prod.id} className="space-y-1">
                           <div className="flex justify-between text-xs font-medium">
                             <span className="text-gray-300">{prod.titleEn}</span>
-                            <span className="text-emerald-400 font-bold">{prod.clicks} clics</span>
+                            <span className="text-brand-accent font-bold">{prod.clicks} clics</span>
                           </div>
                           <div className="w-full bg-gray-900 rounded-full h-2 overflow-hidden">
                             <div
-                              className="bg-emerald-500 h-2 rounded-full transition-all duration-500"
+                              className="bg-brand-accent h-2 rounded-full transition-all duration-500"
                               style={{ width: `${percentage}%` }}
                             />
                           </div>
@@ -1142,9 +1230,9 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Links Breakdown */}
-              <div className="bg-[#161E2E] border border-gray-800 rounded-2xl p-6">
+              <div className="bg-darkCard border border-gray-800 rounded-2xl p-6">
                 <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                  <LinkIcon className="w-5 h-5 text-emerald-400" />
+                  <LinkIcon className="w-5 h-5 text-brand-accent" />
                   <span>Desglose por Enlace</span>
                 </h3>
 
@@ -1158,11 +1246,11 @@ export default function AdminDashboardPage() {
                         <div key={lnk.id} className="space-y-1">
                           <div className="flex justify-between text-xs font-medium">
                             <span className="text-gray-300">{lnk.titleEn}</span>
-                            <span className="text-emerald-400 font-bold">{lnk.clicks} clics</span>
+                            <span className="text-brand-accent font-bold">{lnk.clicks} clics</span>
                           </div>
                           <div className="w-full bg-gray-900 rounded-full h-2 overflow-hidden">
                             <div
-                              className="bg-emerald-400 h-2 rounded-full transition-all duration-500"
+                              className="bg-brand-accent h-2 rounded-full transition-all duration-500"
                               style={{ width: `${percentage}%` }}
                             />
                           </div>
@@ -1180,7 +1268,7 @@ export default function AdminDashboardPage() {
       {/* PRODUCT MODAL */}
       {productModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#161E2E] border border-gray-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+          <div className="bg-darkCard border border-gray-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
             <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
               <h3 className="font-bold text-white text-lg">
                 {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
@@ -1205,7 +1293,7 @@ export default function AdminDashboardPage() {
                     value={productForm.titleEn}
                     onChange={(e) => setProductForm({ ...productForm, titleEn: e.target.value })}
                     placeholder="Ej. Kallpay Whey Protein 1kg"
-                    className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-4 py-2.5 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent"
                   />
                 </div>
 
@@ -1219,7 +1307,7 @@ export default function AdminDashboardPage() {
                     value={productForm.titleEs}
                     onChange={(e) => setProductForm({ ...productForm, titleEs: e.target.value })}
                     placeholder="Ej. Proteína Whey Kallpay 1kg"
-                    className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-4 py-2.5 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent"
                   />
                 </div>
               </div>
@@ -1234,7 +1322,7 @@ export default function AdminDashboardPage() {
                     value={productForm.badgeTextEn}
                     onChange={(e) => setProductForm({ ...productForm, badgeTextEn: e.target.value })}
                     placeholder="Ej. Best Seller"
-                    className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-4 py-2.5 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent"
                   />
                 </div>
 
@@ -1247,7 +1335,7 @@ export default function AdminDashboardPage() {
                     value={productForm.badgeTextEs}
                     onChange={(e) => setProductForm({ ...productForm, badgeTextEs: e.target.value })}
                     placeholder="Ej. Más vendido"
-                    className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-4 py-2.5 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent"
                   />
                 </div>
               </div>
@@ -1262,7 +1350,7 @@ export default function AdminDashboardPage() {
                   value={productForm.imageUrl}
                   onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })}
                   placeholder="https://..."
-                  className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-4 py-2.5 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent"
                 />
               </div>
 
@@ -1276,7 +1364,7 @@ export default function AdminDashboardPage() {
                   value={productForm.buyUrl}
                   onChange={(e) => setProductForm({ ...productForm, buyUrl: e.target.value })}
                   placeholder="https://pay.kallpay.com/..."
-                  className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-4 py-2.5 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent"
                 />
               </div>
 
@@ -1286,7 +1374,7 @@ export default function AdminDashboardPage() {
                   id="prodActive"
                   checked={productForm.active}
                   onChange={(e) => setProductForm({ ...productForm, active: e.target.checked })}
-                  className="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
+                  className="w-4 h-4 accent-brand-accent rounded cursor-pointer"
                 />
                 <label htmlFor="prodActive" className="text-sm font-medium text-gray-200 cursor-pointer">
                   Producto activo y visible públicamente
@@ -1303,7 +1391,7 @@ export default function AdminDashboardPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-500 text-black font-bold rounded-xl hover:bg-emerald-400 text-sm"
+                  className="px-4 py-2 bg-brand-accent text-darkBg font-bold rounded-xl hover:bg-brand-accent/90 text-sm"
                 >
                   Guardar
                 </button>
@@ -1316,7 +1404,7 @@ export default function AdminDashboardPage() {
       {/* LINK MODAL */}
       {linkModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#161E2E] border border-gray-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+          <div className="bg-darkCard border border-gray-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
             <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
               <h3 className="font-bold text-white text-lg">
                 {editingLink ? 'Editar Enlace' : 'Nuevo Enlace'}
@@ -1341,7 +1429,7 @@ export default function AdminDashboardPage() {
                     value={linkForm.titleEn}
                     onChange={(e) => setLinkForm({ ...linkForm, titleEn: e.target.value })}
                     placeholder="Ej. Follow us on Instagram"
-                    className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-4 py-2.5 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent"
                   />
                 </div>
 
@@ -1355,7 +1443,7 @@ export default function AdminDashboardPage() {
                     value={linkForm.titleEs}
                     onChange={(e) => setLinkForm({ ...linkForm, titleEs: e.target.value })}
                     placeholder="Ej. Síguenos en Instagram"
-                    className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-4 py-2.5 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent"
                   />
                 </div>
               </div>
@@ -1370,7 +1458,7 @@ export default function AdminDashboardPage() {
                   value={linkForm.url}
                   onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
                   placeholder="https://..."
-                  className="w-full px-4 py-2.5 bg-[#0B0F17] border border-gray-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-4 py-2.5 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent"
                 />
               </div>
 
@@ -1386,8 +1474,8 @@ export default function AdminDashboardPage() {
                       onClick={() => setLinkForm({ ...linkForm, icon: iconName })}
                       className={`p-3 rounded-xl border flex flex-col items-center gap-1.5 transition ${
                         linkForm.icon === iconName
-                          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400 font-bold'
-                          : 'bg-[#0B0F17] border-gray-800 text-gray-400 hover:border-gray-700 hover:text-white'
+                          ? 'bg-brand-accent/20 border-brand-accent text-brand-accent font-bold'
+                          : 'bg-darkBg border-gray-800 text-gray-400 hover:border-gray-700 hover:text-white'
                       }`}
                     >
                       {renderIcon(iconName)}
@@ -1403,7 +1491,7 @@ export default function AdminDashboardPage() {
                   id="linkActive"
                   checked={linkForm.active}
                   onChange={(e) => setLinkForm({ ...linkForm, active: e.target.checked })}
-                  className="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
+                  className="w-4 h-4 accent-brand-accent rounded cursor-pointer"
                 />
                 <label htmlFor="linkActive" className="text-sm font-medium text-gray-200 cursor-pointer">
                   Enlace activo y visible públicamente
@@ -1420,7 +1508,7 @@ export default function AdminDashboardPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-500 text-black font-bold rounded-xl hover:bg-emerald-400 text-sm"
+                  className="px-4 py-2 bg-brand-accent text-darkBg font-bold rounded-xl hover:bg-brand-accent/90 text-sm"
                 >
                   Guardar
                 </button>
