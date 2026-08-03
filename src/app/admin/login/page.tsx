@@ -44,18 +44,18 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0B0F17] flex items-center justify-center p-4 selection:bg-emerald-500 selection:text-black">
+    <main className="min-h-screen bg-darkBg flex items-center justify-center p-4 selection:bg-brand-accent selection:text-black">
       {/* Background Glow effects */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-brand-accent/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-4 shadow-lg shadow-emerald-500/10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-accent/10 border border-brand-accent/20 text-brand-accent mb-4 shadow-lg shadow-brand-accent/10">
             <ShieldCheck className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">
-            Kallpay <span className="text-emerald-400">Admin</span>
+          <h1 className="text-3xl font-extrabold tracking-tight text-brand-text">
+            Kallpay <span className="text-brand-accent">Admin</span>
           </h1>
           <p className="text-gray-400 text-sm mt-1">
             Inicia sesión para gestionar tu catálogo y enlaces
@@ -63,7 +63,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-[#161E2E]/80 backdrop-blur-xl border border-gray-800 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-darkCard/80 backdrop-blur-xl border border-gray-800 rounded-2xl p-8 shadow-2xl">
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm flex items-center gap-2 animate-fadeIn">
               <span className="w-2 h-2 rounded-full bg-red-400 animate-ping" />
@@ -85,7 +85,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-[#0B0F17] border border-gray-700/80 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition duration-200"
+                  className="w-full pl-11 pr-4 py-3 bg-darkBg border border-gray-700/80 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition duration-200"
                 />
               </div>
             </div>
@@ -104,7 +104,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-11 pr-11 py-3 bg-[#0B0F17] border border-gray-700/80 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition duration-200"
+                  className="w-full pl-11 pr-11 py-3 bg-darkBg border border-gray-700/80 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition duration-200"
                 />
                 <button
                   type="button"
@@ -123,7 +123,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3.5 px-4 bg-brand-accent hover:bg-brand-accent text-black font-bold rounded-xl shadow-lg shadow-brand-accent/20 hover:shadow-brand-accent/30 transition duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
