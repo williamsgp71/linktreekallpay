@@ -71,6 +71,10 @@ interface BrandProfile {
   bannerTextEs: string;
   promoCode: string;
   showBanner: boolean;
+  colorBackground: string;
+  colorCard: string;
+  colorAccent: string;
+  colorText: string;
 }
 
 const ICON_OPTIONS = [
@@ -106,6 +110,10 @@ export default function AdminDashboardPage() {
     bannerTextEs: '',
     promoCode: '',
     showBanner: true,
+    colorBackground: '#0B0F17',
+    colorCard: '#161E2E',
+    colorAccent: '#10B981',
+    colorText: '#F3F4F6',
   });
 
   const [loading, setLoading] = useState(true);
@@ -444,6 +452,39 @@ export default function AdminDashboardPage() {
     } finally {
       setSavingBrand(false);
     }
+  };
+
+  // --- COLOR HANDLERS ---
+  const HEX_COLOR_REGEX = /^#([0-9A-Fa-f]{3}){1,2}$/;
+
+  const CSS_VAR_BY_FIELD = {
+    colorBackground: '--color-bg',
+    colorCard: '--color-card',
+    colorAccent: '--color-accent',
+    colorText: '--color-text',
+  } as const;
+
+  type ColorField = keyof typeof CSS_VAR_BY_FIELD;
+
+  const DEFAULT_COLORS: Record<ColorField, string> = {
+    colorBackground: '#0B0F17',
+    colorCard: '#161E2E',
+    colorAccent: '#10B981',
+    colorText: '#F3F4F6',
+  };
+
+  const handleColorChange = (field: ColorField, value: string) => {
+    setBrand((prev) => ({ ...prev, [field]: value }));
+    if (HEX_COLOR_REGEX.test(value)) {
+      document.documentElement.style.setProperty(CSS_VAR_BY_FIELD[field], value);
+    }
+  };
+
+  const handleResetColors = () => {
+    setBrand((prev) => ({ ...prev, ...DEFAULT_COLORS }));
+    (Object.keys(DEFAULT_COLORS) as ColorField[]).forEach((field) => {
+      document.documentElement.style.setProperty(CSS_VAR_BY_FIELD[field], DEFAULT_COLORS[field]);
+    });
   };
 
   // Analytics Calculations
@@ -1016,6 +1057,56 @@ export default function AdminDashboardPage() {
                     placeholder="KALLPAY10"
                     className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-brand-accent transition"
                   />
+                </div>
+              </div>
+
+              <div className="border-t border-gray-800 pt-6 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-white text-sm">Colores de la Página</h4>
+                    <p className="text-xs text-gray-400">
+                      Personaliza el fondo, las tarjetas, el acento y el texto principal. Se previsualiza al instante.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleResetColors}
+                    className="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-medium text-gray-200 border border-gray-700 transition"
+                  >
+                    Restaurar valores por defecto
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {(
+                    [
+                      { field: 'colorBackground' as ColorField, label: 'Fondo General' },
+                      { field: 'colorCard' as ColorField, label: 'Tarjetas / Banner' },
+                      { field: 'colorAccent' as ColorField, label: 'Acento (Botones, Precios)' },
+                      { field: 'colorText' as ColorField, label: 'Texto Principal' },
+                    ]
+                  ).map(({ field, label }) => (
+                    <div key={field}>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+                        {label}
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="color"
+                          value={brand[field]}
+                          onChange={(e) => handleColorChange(field, e.target.value)}
+                          className="w-12 h-11 rounded-lg border border-gray-700 bg-darkBg cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={brand[field]}
+                          onChange={(e) => handleColorChange(field, e.target.value)}
+                          placeholder="#000000"
+                          className="w-full px-4 py-3 bg-darkBg border border-gray-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-brand-accent transition"
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
