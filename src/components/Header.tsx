@@ -44,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Title & Verified Badge */}
       <div className="flex flex-col items-center gap-1.5">
         <div className="flex items-center justify-center gap-2">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl font-extrabold text-brand-text tracking-tight">
             {title}
           </h1>
           <span

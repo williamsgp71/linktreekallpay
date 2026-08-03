@@ -53,8 +53,8 @@ export const PublicView: React.FC<PublicViewProps> = ({
   const t = translations[lang];
 
   return (
-    <main className="min-h-screen bg-[#0B0F17] text-gray-100 selection:bg-emeraldAccent selection:text-darkBg font-sans">
-      <div className="max-w-md mx-auto min-h-screen flex flex-col justify-between relative px-2 py-4 pb-24 shadow-2xl bg-[#0B0F17]">
+    <main className="min-h-screen bg-darkBg text-brand-text selection:bg-emeraldAccent selection:text-darkBg font-sans">
+      <div className="max-w-md mx-auto min-h-screen flex flex-col justify-between relative px-2 py-4 pb-24 shadow-2xl bg-darkBg">
         <div className="space-y-4">
           {/* Header Component with Language Toggle */}
           <Header
